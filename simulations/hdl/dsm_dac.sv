@@ -4,12 +4,12 @@ input 			clk,
 input [7:0] dsm_in
 );
 
-	reg [8:0] dsm_accumulator = 0;
+	reg [8:0] dsm_acc = 0;
 
 	always @(posedge clk)
 		if (dsm_in != 1'bx)
-			dsm_accumulator <= dsm_accumulator[7:0] + dsm_in;
+			dsm_acc <= dsm_acc [7:0] + dsm_in;
 
-	assign dsm_out = dsm_accumulator[8];
+	assign dsm_out = dsm_acc[8];
 
 endmodule

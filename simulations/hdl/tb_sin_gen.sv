@@ -9,7 +9,7 @@ module tb_sin_gen ();
 
   // signal inst
   reg clk;
-  wire [15:0] out;
+  wire [7:0] out;
 
   sin_gen dut (
     .clk(clk),

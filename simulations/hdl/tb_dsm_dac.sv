@@ -11,7 +11,7 @@ module tb_dsm_dac();
 
   reg clk;
   wire clk_1MHz;
-  wire [15:0] sin_out;
+  wire [7:0] sin_out;
   wire dsm_out;
   wire n_dsm_out;
 
@@ -56,7 +56,7 @@ module tb_dsm_dac();
     // end
 
     `TEST_CASE("op") begin
-      n_pts = 97;
+      n_pts = 30;
       n_cycles = n_pts;
       n_complete_waves = 1;
       // $monitor("i=%d, time=%0t, clk_in=%b, clk_out=%b", i, $time, clk, clk_1MHz);
