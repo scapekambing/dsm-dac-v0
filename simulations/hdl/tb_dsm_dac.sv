@@ -13,9 +13,6 @@ module tb_dsm_dac();
   wire clk_1MHz;
   wire [7:0] sin_out;
   wire dsm_out;
-  wire n_dsm_out;
-
-  assign n_dsm_out = !dsm_out;
 
   // clock generation
   localparam clk_period = 10;
@@ -42,9 +39,11 @@ module tb_dsm_dac();
     .out(sin_out) // 1 / n_pts * 10 div_constant * 10 ns = 1MHz / n_pts
   );
 
+  logic enb;
   dsm_dac dac (
     .clk(clk),
     .dsm_in(sin_out),
+    .enb(enb),
     .dsm_out(dsm_out)
   );
 
@@ -62,6 +61,8 @@ module tb_dsm_dac();
       // $monitor("i=%d, time=%0t, clk_in=%b, clk_out=%b", i, $time, clk, clk_1MHz);
       for (i = 0; i < div_const*n_cycles*n_complete_waves; i = i + 1) begin
         #(clk_period);
+          if (sin_out[0] == 0)
+            enb = 1;
       end
     end
   end
