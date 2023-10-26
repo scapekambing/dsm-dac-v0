@@ -1,14 +1,17 @@
 `timescale 1ns / 1ps
 
-module second_order_dsm_dac(
+module second_order_dsm_dac #(
+	parameter WIDTH = 16,
+	parameter EXT = 4 // (1 for sign + 1 for accumulating msb output)*2
+)
+(
   input 								clk      ,
 	input									rst			 ,
-  input 				[15:0] 	dsm_in   ,
+  input 				[WIDTH-1:0] 	dsm_in   ,
 	input  								clk_en   ,
   output logic 					dsm_out   
 );
-	localparam WIDTH = 16;
-	localparam EXT = 4; // 1 for sign + 1 for accumulating msb output
+
 	
 	// accumulator with extension
   logic [WIDTH+EXT-1:0] dsm_acc_1st;
@@ -21,8 +24,10 @@ module second_order_dsm_dac(
 	// operation
   always_ff @(posedge clk) begin
 		if (~rst) begin
-			dsm_acc_1st <= 20'd0;
-			dsm_acc_2nd <= 20'd0;
+			// dsm_acc_1st <= 20'd0;
+			// dsm_acc_2nd <= 20'd0;
+			dsm_acc_1st <= {27{1'b0}};
+			dsm_acc_2nd <= {27{1'b0}};
 			dsm_out <= 0;
 		end
 		else begin
@@ -34,16 +39,16 @@ module second_order_dsm_dac(
 
 						// use blocking
 						dsm_acc_1st = dsm_acc_1st + dsm_in_extended // sigma
-														- (2**15); // delta
+														- (2**(22-1)); // delta
 						dsm_acc_2nd = dsm_acc_2nd + dsm_acc_1st // sigma
-														- (2**15); // delta
+														- (2**(22-1)); // delta
 				end
 				else begin
 						// use blocking
 						dsm_acc_1st = dsm_acc_1st + dsm_in_extended // sigma
-														+ (2**15); // delta
+														+ (2**(22-1)); // delta
 						dsm_acc_2nd = dsm_acc_2nd + dsm_acc_1st // sigma
-														+ (2**15); // delta
+														+ (2**(22-1)); // delta
 				end
 
 				// When the high bit is set (a negative value) 

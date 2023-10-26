@@ -3,7 +3,7 @@
 `include "vunit_defines.svh"
 
 `include "../rtl/clk_div.sv"
-`include "../rtl/sin_gen.sv"
+`include "../rtl/sin_gen_zoh.sv"
 `include "../rtl/first_order_dsm_dac.sv"
 `include "../rtl/second_order_dsm_dac.sv"
 
@@ -43,7 +43,7 @@ module tb_second_order_dsm_dac();
   );
 
   // f = 100MHz/n_pts/div_const
-  sin_gen wave_gen (
+  sin_gen_zoh wave_gen (
     .clk(clk),
     .rst(rst),
     .clk_en(clk_en),

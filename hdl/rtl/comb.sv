@@ -1,35 +1,40 @@
+// `default_nettype none
+
 module comb # (
   parameter WIDTH = 16,
   parameter GROWTH = 7, // (N*$clog2(R*M))
   parameter SIGN = 1,
 
-  parameter INTEGRATOR_WIDTH = WIDTH + GROWTH + SIGN
+  parameter COMB_WIDTH = WIDTH + GROWTH + SIGN
 )
 (
   input        [WIDTH - 1:0]                  in,
+  input                                       clk,
   input                                       rst,
   input                                       clk_en,
-  output logic [INTEGRATOR_WIDTH:0]  out
+  output  logic [COMB_WIDTH-1:0]              out
 );
   
 
-  logic [COMB_WIDTH - 1:0]    comb_delay_r;
-                              in_extended;
+  logic [COMB_WIDTH - 1:0]    comb_delay_r,
+                              comb_current_r;
 
-  assign in_extended = { {(SIGN+GROWTH){in[WIDTH-1]}} , in};
-
-  always_ff @(posedge clk) begin
+  always_ff @(negedge clk_en) begin
     if (~rst) begin
-      comb_r <= 0;
       comb_delay_r <= 0;
+      comb_current_r <= { {(GROWTH+SIGN){in[WIDTH-1]}}, in};
     end 
-    else if (clk_en) begin
-      comb_delay_r <= in_extended; 
+    else begin
+        comb_delay_r <= comb_current_r; 
+        comb_current_r <= { {(GROWTH+SIGN){in[WIDTH-1]}}, in};
     end
   end
 
-  always_comb begin
-    out = in_extended - comb_delay_r;
+  // sensitivity list is infered from the expression
+  always_comb begin 
+    out <= comb_current_r - comb_delay_r;
   end
 
 endmodule
+
+// `default_nettype none

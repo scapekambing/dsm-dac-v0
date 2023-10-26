@@ -1,4 +1,4 @@
-module sin_gen (
+module sin_gen_zoh (
     input               clk,
     input               rst,
     input               clk_en,
@@ -76,9 +76,6 @@ module sin_gen (
             if (i == POINTS-1) begin
                 i <= 0;
             end 
-        end
-        else begin 
-            out  <= 0; 
         end
     end
 

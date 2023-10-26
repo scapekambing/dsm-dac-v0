@@ -1,14 +1,17 @@
 `timescale 1ns / 1ps
 
-module first_order_dsm_dac(
+module first_order_dsm_dac # (
+	parameter WIDTH = 16,
+	parameter EXT = 2
+)
+
+(
   input 								clk      ,
 	input									rst			 ,
-  input 				[15:0] 	dsm_in   ,
+  input 				[WIDTH-1:0] 	dsm_in   ,
 	input  								clk_en   ,
   output logic 					dsm_out   
 );
-	localparam WIDTH = 16;
-	localparam EXT = 2; // 1 for sign + 1 for accumulating msb output
 	
 	// accumulator with sign extension
   logic [WIDTH+EXT-1:0] dsm_acc;
@@ -20,7 +23,8 @@ module first_order_dsm_dac(
 	// operation
   always_ff @(posedge clk) begin
 		if (~rst) begin
-			dsm_acc <= 18'd0;
+			// dsm_acc <= 18'd0;W
+			dsm_acc <= {25{1'b0}};
 			dsm_out <= 1'b0;
 		end
 		else begin
@@ -30,12 +34,12 @@ module first_order_dsm_dac(
 						// then that means we overshot 
 						// the desired val, so subtract
 						dsm_acc = dsm_acc + dsm_in_extended // sigma
-											- (2**15); // delta
+											- (2**(22-1)); // delta
 				end
 				else begin
 						// if the last output was 0, then that means we undershot
 						dsm_acc = dsm_acc + dsm_in_extended // sigma
-											+ (2**15); // delta
+											+ (2**(22-1)); // delta
 				end
 
 				// When the high bit is set (a negative value) 
